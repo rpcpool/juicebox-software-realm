@@ -1,5 +1,5 @@
 # Dockerfile
-FROM golang:1.22.6
+FROM docker.io/golang:1.22.6
 
 RUN apt-get update &&\
     apt-get upgrade -y &&\
