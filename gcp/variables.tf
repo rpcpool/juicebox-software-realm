@@ -22,3 +22,14 @@ variable "tenant_secrets" {
   description = "The names of any tenants you will be allowing access to (alphanumeric) mapped to their auth signing key. Read the 'Tenant Auth Secrets' section of the README for more details."
   type        = map(string)
 }
+
+variable "image_url" {
+  description = "The url of the juicebox docker image"
+  type        = string
+}
+
+variable "image_version" {
+  description = "The version of the juicebox docker image in the repository"
+  type        = string
+  default     = "latest"
+}
