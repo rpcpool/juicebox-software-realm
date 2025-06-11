@@ -11,13 +11,11 @@ variable "realm_id" {
 variable "region" {
   description = "Google Cloud Region"
   type        = string
-  default     = "us-west2"
 }
 
 variable "zone" {
   description = "Google Cloud Zone"
   type        = string
-  default     = "us-west2-a"
 }
 
 variable "tenant_secrets" {
