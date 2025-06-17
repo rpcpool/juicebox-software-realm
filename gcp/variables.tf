@@ -11,16 +11,30 @@ variable "realm_id" {
 variable "region" {
   description = "Google Cloud Region"
   type        = string
-  default     = "us-west2"
 }
 
 variable "zone" {
   description = "Google Cloud Zone"
   type        = string
-  default     = "us-west2-a"
 }
 
 variable "tenant_secrets" {
   description = "The names of any tenants you will be allowing access to (alphanumeric) mapped to their auth signing key. Read the 'Tenant Auth Secrets' section of the README for more details."
   type        = map(string)
+}
+
+variable "juicebox_image_url" {
+  description = "The url of the juicebox docker image"
+  type        = string
+}
+
+variable "juicebox_image_version" {
+  description = "The version of the juicebox docker image"
+  type        = string
+}
+
+variable "juicebox_vars" {
+  description = "Environment variables for the juicebox container"
+  type        = map(string)
+  default     = {}
 }

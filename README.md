@@ -76,48 +76,26 @@ The realm software will determine which tenant key to validate on a request by a
 
 ## GCP
 
-The following instructions will help you quickly deploy a realm to Google's App Engine Flex.
+The `gcp/` directory is now a Terraform module which can be leveraged in your own Terraform codebase. For example:
 
-Before you begin, setup a project for your realm to run in on [console.cloud.google.com](https://console.cloud.google.com) and make note of its ID.
+```terraform
+module "juicebox-software-realm" {
+  source = "github.com/rpcpool/juicebox-software-realm.git//gcp"
 
-Next, setup your project environment with terraform as follows:
-```sh
-cd gcp
-terraform init
-terraform plan -var='tenant_secrets={"acme":"acme-tenant-key","anotherTenant":"another-tenant-key"}'
-terraform apply -var='tenant_secrets={"acme":"acme-tenant-key","anotherTenant":"another-tenant-key"}'
+  project_id             = "your-project-id"
+  realm_id               = "99b2da84b7076203dc35804bbbcb8cba"
+  region                 = "europe-west3"
+  zone                   = "c"
+  tenant_secrets         = {"acme":"acme-tenant-key","anotherTenant":"another-tenant-key"}
+  juicebox_image_url     = "path/to/juicebox/container/image"
+  juicebox_image_version = "latest"
+  otelcol_image_url      = "path/to/otel/collector/container/image"
+  otelcol_image_version  = "latest"
+  otelcol_config_b64     = filebase64("otel-collector-config.yaml")
+}
 ```
 
-Note: you should update the tenant secrets `var` to reflect the actual secrets you wish to support.
-
-After terraform has finished configuring your project environment, you should see an output like follows:
-```sh
-BIGTABLE_INSTANCE_ID = "jb-sw-realms"
-GCP_PROJECT_ID = "your-project-id"
-REALM_ID = "99b2da84-b707-6203-dc35-804bbbcb8cba"
-SERVICE_ACCOUNT = "jb-sw-realms@your-project-id.iam.gserviceaccount.com"
-```
-
-Open the `cmd/jb-sw-realm/app.yaml` file and configure it with these values where appropriate, for example:
-Replace `{{YOUR_BIGTABLE_INSTANCE_ID}}` with `jb-sw-realms`.
-
-Finally, you can deploy the realm software by running the following command from the `cmd/jb-sw-realm` directory of the repo:
-```sh
-gcloud app deploy --project {{YOUR_GCP_PROJECT_ID}}
-```
-
-Note: you will need to have the `gcloud` command line tools installed to execute this command. You can find instructions on installing these [here](https://cloud.google.com/sdk/docs/install).
-
-This may take a few minutes, but upon success you should be able to access your realm at:
-https://{{YOUR_GCP_PROJECT_ID}}.wl.r.appspot.com
-
-If all was successful, you'll see a page render that looks something like:
-```json
-{"realmID":"99b2da84-b707-6203-dc35-804bbbcb8cba"}
-```
-
-If you wish to configure a custom domain for your new realm, visit:
-https://console.cloud.google.com/appengine/settings/domains
+This will deploy an instance of Juicebox Software Realm along with the necessary infrastructure that supports it. Please note that you will either need to deploy the Juicebox and OpenTelemetry Collector containers to a repository in GCP, or else use a remote repository which caches them from GitHub.
 
 ## AWS
 
