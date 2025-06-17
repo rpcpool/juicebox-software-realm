@@ -3,7 +3,7 @@ FROM docker.io/golang:latest
 
 RUN apt-get update &&\
     apt-get upgrade -y &&\
-    apt-get install -y apt-transport-https ca-certificates curl gnupg &&\
+    apt-get install -y apt-transport-https ca-certificates curl wget gnupg &&\
     apt-get clean
 
 RUN install -m 0755 -d /etc/apt/keyrings &&\
@@ -18,4 +18,8 @@ RUN install -m 0755 -d /etc/apt/keyrings &&\
 
 RUN mkdir -p /usr/local/bin && apt-get update && apt-get install -y unzip && curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
 
-RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | tee /usr/share/keyrings/trivy.gpg > /dev/null &&\
+    echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | tee -a /etc/apt/sources.list.d/trivy.list &&\
+    apt-get update &&\
+    apt-get install -y trivy &&\
+    apt-get clean
