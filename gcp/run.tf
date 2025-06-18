@@ -58,6 +58,11 @@ resource "google_cloud_run_v2_service" "juicebox" {
       }
     }
   }
+  lifecycle {
+    ignore_changes = [
+      client
+    ]
+  }
 }
 
 resource "google_project_iam_binding" "logs_writer_binding" {
