@@ -1,0 +1,83 @@
+# Create Cloud Run Service
+resource "google_cloud_run_v2_service" "juicebox" {
+  name                = "juicebox"
+  location            = var.region
+  deletion_protection = true
+  ingress             = "INGRESS_TRAFFIC_ALL"
+  scaling {
+    min_instance_count = 4
+  }
+  template {
+    timeout         = "300s"
+    service_account = google_service_account.service_account.email
+    containers {
+      name = "juicebox-1"
+      ports {
+        name           = "http1"
+        container_port = 8080
+      }
+      resources {
+        cpu_idle          = true
+        startup_cpu_boost = true
+        limits = {
+          cpu    = "1000m"
+          memory = "512Mi"
+        }
+      }
+      startup_probe {
+        timeout_seconds   = 240
+        period_seconds    = 240
+        failure_threshold = 1
+        tcp_socket {
+          port = 8080
+        }
+      }
+      image = "${var.juicebox_image_url}:${var.juicebox_image_version}"
+      env {
+        name  = "BIGTABLE_INSTANCE_ID"
+        value = google_bigtable_instance.instance.name
+      }
+      env {
+        name  = "GCP_PROJECT_ID"
+        value = var.project_id
+      }
+      env {
+        name  = "PROVIDER"
+        value = "gcp"
+      }
+      env {
+        name  = "REALM_ID"
+        value = var.realm_id
+      }
+      dynamic "env" {
+        for_each = var.juicebox_vars
+        content {
+          name  = env.key
+          value = env.value
+        }
+      }
+    }
+  }
+  lifecycle {
+    ignore_changes = [
+      client
+    ]
+  }
+}
+
+resource "google_project_iam_binding" "logs_writer_binding" {
+  project = var.project_id
+  role    = "roles/logging.logWriter"
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}"
+  ]
+}
+
+resource "google_cloud_run_v2_service_iam_binding" "allow_unauthenticated_users" {
+  project = var.project_id
+  name    = google_cloud_run_v2_service.juicebox.name
+  role    = "roles/run.invoker"
+  members = [
+    "allUsers",
+  ]
+}
