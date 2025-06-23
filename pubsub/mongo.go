@@ -108,11 +108,11 @@ func (m *mongoPubSub) Publish(ctx context.Context, _ types.RealmID, tenant strin
 	return types.NewHTTPError(http.StatusInternalServerError, err)
 }
 
-func (m *mongoPubSub) Pull(ctx context.Context, _ types.RealmID, tenant string, maxMessages uint16) ([]responses.TenantLogEntry, error) {
+func (m *mongoPubSub) Pull(ctx context.Context, _ types.RealmID, tenant string, max uint16) ([]responses.TenantLogEntry, error) {
 	collection := m.db.Collection(tenant + collectionSuffix)
-	maxMessages64 := int64(maxMessages)
+	max64 := int64(max)
 	opts := options.FindOptions{
-		Limit: &maxMessages64,
+		Limit: &max64,
 	}
 	// Skip anything that has been pulled in the last 10 seconds.
 	ackWindow := time.Now().Add(-time.Second * 10)
