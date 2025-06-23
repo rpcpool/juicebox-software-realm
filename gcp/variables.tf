@@ -38,3 +38,26 @@ variable "juicebox_vars" {
   type        = map(string)
   default     = {}
 }
+
+variable "otelcol_image_url" {
+  description = "The url of the opentelemetry collector docker image"
+  type        = string
+}
+
+variable "otelcol_image_version" {
+  description = "The version of the opentelemetry collector docker image"
+  type        = string
+}
+
+variable "otelcol_config_b64" {
+  description = "A configuration file for the OpenTelemetry Collector, encoded in base64"
+  type        = string
+  default     = "INTERNAL"
+  # This default is captured in secret-manager.tf to deploy ../otel-collector-config.yaml from this repository.
+}
+
+variable "otelcol_vars" {
+  description = "Environment variables for the juicebox container"
+  type        = map(string)
+  default     = {}
+}
