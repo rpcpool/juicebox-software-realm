@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "terraform"
+    directory: "/gcp"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    labels:
+      - "deps"
+      - "dependabot"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
